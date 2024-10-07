@@ -10,7 +10,7 @@ func TestGetWaitTime(t *testing.T) {
 
 	testCases := []struct {
 		retryCount int
-		waitTime time.Duration
+		waitTime   time.Duration
 	}{
 		{0, 100 * time.Millisecond},
 		{1, 200 * time.Millisecond},
