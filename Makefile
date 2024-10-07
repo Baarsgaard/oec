@@ -22,3 +22,18 @@ fmt:
 .PHONY: docker
 docker:
 	docker build -t oec:latest .
+
+# Useful if more build dependencies are added later
+ifeq (,$(shell go env GOBIN))
+GOBIN=$(shell go env GOPATH)/bin
+else
+GOBIN=$(shell go env GOBIN)
+endif
+
+export KO_DOCKER_REPO ?= ko.local/opsgenie/oec
+.PHONY: ko
+ko:
+ifneq (,$(shell which ko))
+	@go install github.com/google/ko@latest
+endif
+	$(GOBIN)/ko build --sbom=none --bare ./main
