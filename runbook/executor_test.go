@@ -2,7 +2,7 @@ package runbook
 
 import (
 	"bytes"
-	"github.com/opsgenie/oec/util"
+	"github.com/opsgenie/oec/test_util"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"runtime"
@@ -17,7 +17,7 @@ func TestExecuteSuccess(t *testing.T) {
 
 	if runtime.GOOS != "windows" {
 		content := []byte("echo \"Test output\"\necho \"Given Environment Variable: TESTENVVAR: $TESTENVVAR\"\n")
-		tmpFilePath, err := util.CreateTempTestFile(content, shFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, shFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {
@@ -33,7 +33,7 @@ func TestExecuteSuccess(t *testing.T) {
 			"Output stream was not equal to expected.")
 	} else {
 		content := []byte("@echo off\r\necho Test output\r\necho Given Environment Variable: TESTENVVAR: %TESTENVVAR%\n")
-		tmpFilePath, err := util.CreateTempTestFile(content, batFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, batFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {
@@ -53,7 +53,7 @@ func TestExecuteSuccess(t *testing.T) {
 func TestExecuteWithErrorStream(t *testing.T) {
 	if runtime.GOOS != "windows" {
 		content := []byte(">&2 echo \"test error\"\n")
-		tmpFilePath, err := util.CreateTempTestFile(content, shFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, shFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {
@@ -69,7 +69,7 @@ func TestExecuteWithErrorStream(t *testing.T) {
 
 	} else {
 		content := []byte("@echo off\r\necho test error>&2\r\n")
-		tmpFilePath, err := util.CreateTempTestFile(content, batFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, batFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {
@@ -88,7 +88,7 @@ func TestExecuteWithErrorStream(t *testing.T) {
 func TestExecuteWithError(t *testing.T) {
 	if runtime.GOOS == "darwin" {
 		content := []byte("sacmasapan")
-		tmpFilePath, err := util.CreateTempTestFile(content, shFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, shFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {
@@ -106,7 +106,7 @@ func TestExecuteWithError(t *testing.T) {
 		assert.Contains(t, err.(*ExecError).Stderr, cmdErr.String(), "ExecError is not same as cmdErr.")
 	} else if runtime.GOOS == "windows" {
 		content := []byte("sacmasapan")
-		tmpFilePath, err := util.CreateTempTestFile(content, batFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, batFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {
@@ -125,7 +125,7 @@ func TestExecuteWithError(t *testing.T) {
 		assert.Contains(t, err.(*ExecError).Stderr, cmdErr.String(), "ExecError is not same as cmdErr.")
 	} else if runtime.GOOS == "linux" {
 		content := []byte("sacmasapan")
-		tmpFilePath, err := util.CreateTempTestFile(content, shFileExt)
+		tmpFilePath, err := test_util.CreateTempTestFile(content, shFileExt)
 		defer os.Remove(tmpFilePath)
 
 		if err != nil {

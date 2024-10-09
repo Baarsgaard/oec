@@ -1,9 +1,9 @@
 .PHONY: all
-all: fmt update test build
+all: fmt test build
 
 .PHONY: build
 build:
-	go build -a -o oec ./main
+	go build -a -o oec
 
 .PHONY: update
 update:
@@ -36,4 +36,4 @@ ko:
 ifneq (,$(shell which ko))
 	@go install github.com/google/ko@latest
 endif
-	$(GOBIN)/ko build --sbom=none --bare ./main
+	$(GOBIN)/ko build --sbom=none --bare

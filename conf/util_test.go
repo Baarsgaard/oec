@@ -2,7 +2,7 @@ package conf
 
 import (
 	"fmt"
-	"github.com/opsgenie/oec/util"
+	"github.com/opsgenie/oec/test_util"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -10,7 +10,7 @@ import (
 
 func TestReadJsonFile(t *testing.T) {
 
-	confPath, err := util.CreateTempTestFile(mockJsonFileContent, ".json")
+	confPath, err := test_util.CreateTempTestFile(mockJsonFileContent, ".json")
 	assert.Nil(t, err)
 
 	actualConf, err := readFile(confPath)
@@ -24,7 +24,7 @@ func TestReadJsonFile(t *testing.T) {
 
 func TestReadYamlFile(t *testing.T) {
 
-	confPath, err := util.CreateTempTestFile(mockYamlFileContent, ".yaml")
+	confPath, err := test_util.CreateTempTestFile(mockYamlFileContent, ".yaml")
 	assert.Nil(t, err)
 
 	actualConf, err := readFile(confPath)
@@ -38,7 +38,7 @@ func TestReadYamlFile(t *testing.T) {
 
 func TestReadInvalidFile(t *testing.T) {
 
-	confPath, err := util.CreateTempTestFile(mockYamlFileContent, ".invalid")
+	confPath, err := test_util.CreateTempTestFile(mockYamlFileContent, ".invalid")
 	assert.Nil(t, err)
 
 	_, err = readFile(confPath)
