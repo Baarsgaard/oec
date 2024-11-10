@@ -1,7 +1,7 @@
 package conf
 
 import (
-	"github.com/opsgenie/oec/util"
+	"github.com/opsgenie/oec/test_util"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 func TestReadFileFromLocal(t *testing.T) {
 
-	confPath, err := util.CreateTempTestFile(mockJsonFileContent, ".json")
+	confPath, err := test_util.CreateTempTestFile(mockJsonFileContent, ".json")
 	assert.Nil(t, err)
 
 	actualConf, _ := readFileFromLocal(confPath)

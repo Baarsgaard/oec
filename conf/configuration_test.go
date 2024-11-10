@@ -1,15 +1,16 @@
 package conf
 
 import (
-	"github.com/opsgenie/oec/util"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/opsgenie/oec/test_util"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHttpFieldsFilledCorrectly(t *testing.T) {
 
-	confPath, err := util.CreateTempTestFile(mockJsonFileContent, ".json")
+	confPath, err := test_util.CreateTempTestFile(mockJsonFileContent, ".json")
 	assert.Nil(t, err)
 
 	conf, _ := readFileFromLocal(confPath)
