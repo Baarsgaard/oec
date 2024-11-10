@@ -12,9 +12,9 @@ import (
 )
 
 var mockPollerConf = &conf.PollerConf{
-	pollingWaitIntervalInMillis,
-	visibilityTimeoutInSec,
-	maxNumberOfMessages,
+	PollingWaitIntervalInMillis: pollingWaitIntervalInMillis,
+	VisibilityTimeoutInSeconds:  visibilityTimeoutInSec,
+	MaxNumberOfMessages:         maxNumberOfMessages,
 }
 
 func newPollerTest() *poller {

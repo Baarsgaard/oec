@@ -39,7 +39,6 @@ func Read() (*Configuration, error) {
 	}
 
 	addHomeDirPrefixToActionMappings(conf.ActionMappings)
-	chmodLocalActions(conf.ActionMappings, 0700)
 
 	conf.addDefaultFlags()
 

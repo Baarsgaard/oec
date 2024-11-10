@@ -3,14 +3,10 @@ package queue
 import (
 	"github.com/aws/aws-sdk-go/service/sqs"
 	"github.com/opsgenie/oec/conf"
-	"github.com/opsgenie/oec/util"
 	"github.com/opsgenie/oec/worker_pool"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"os"
-	"path/filepath"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -49,7 +45,7 @@ func NewPoller(workerPool worker_pool.WorkerPool,
 		messageHandler:     messageHandler,
 		ownerId:            ownerId,
 		conf:               conf,
-		queueMessageLogrus: newQueueMessageLogrus(queueProvider.Properties().Region()),
+		queueMessageLogrus: newQueueMessageLogrus(),
 		isRunning:          false,
 		isRunningWg:        &sync.WaitGroup{},
 		startStopMu:        &sync.Mutex{},
@@ -124,7 +120,7 @@ func (p *poller) poll() (shouldWait bool) {
 	}
 
 	region := p.queueProvider.Properties().Region()
-	maxNumberOfMessages := util.Min(p.conf.PollerConf.MaxNumberOfMessages, int64(availableWorkerCount))
+	maxNumberOfMessages := min(p.conf.PollerConf.MaxNumberOfMessages, int64(availableWorkerCount))
 
 	messages, err := p.queueProvider.ReceiveMessage(maxNumberOfMessages, p.conf.PollerConf.VisibilityTimeoutInSeconds)
 	if err != nil { // todo check wait time according to error / check error
@@ -212,26 +208,9 @@ func (p *poller) run() {
 	}
 }
 
-func newQueueMessageLogrus(region string) *logrus.Logger {
-	logFilePath := filepath.Join("/var", "log", "opsgenie", "oecQueueMessages-"+region+"-"+strconv.Itoa(os.Getpid())+".log")
-	queueMessageLogger := &lumberjack.Logger{
-		Filename:  logFilePath,
-		MaxSize:   3,  // MB
-		MaxAge:    10, // Days
-		LocalTime: true,
-	}
-
-	queueMessageLogrus := logrus.New()
-	queueMessageLogrus.SetFormatter(conf.PrepareLogFormat())
-
-	err := queueMessageLogger.Rotate()
-	if err != nil {
-		logrus.Info("Cannot create log file for queueMessages. Reason: ", err)
-	}
-
-	queueMessageLogrus.SetOutput(queueMessageLogger)
-
-	go util.CheckLogFile(queueMessageLogger, time.Second*10)
-
-	return queueMessageLogrus
+func newQueueMessageLogrus() *logrus.Logger {
+	logger := logrus.New()
+	logger.SetFormatter(conf.PrepareLogFormat())
+	logger.SetOutput(os.Stdout)
+	return logger
 }

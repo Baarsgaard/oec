@@ -2,10 +2,10 @@ package git
 
 import (
 	"github.com/go-git/go-git/v5"
-	"github.com/opsgenie/oec/util"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"os"
+	"path/filepath"
 	"sync"
 )
 

@@ -6,10 +6,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
 	"os"
 	fpath "path/filepath"
-	"runtime"
 	"strings"
 	"time"
 )
@@ -30,7 +28,7 @@ func checkFileExtension(filepath string) error {
 
 func readFile(filepath string) (*Configuration, error) {
 
-	file, err := ioutil.ReadFile(filepath)
+	file, err := os.ReadFile(filepath)
 	if err != nil {
 		return nil, err
 	}
@@ -48,13 +46,6 @@ func readFile(filepath string) (*Configuration, error) {
 	}
 }
 
-func homeDir() string {
-	if runtime.GOOS == "windows" {
-		return os.Getenv("USERPROFILE")
-	}
-	return os.Getenv("HOME")
-}
-
 func addHomeDirPrefix(filepath string) string {
 	if filepath == "" {
 		return filepath
@@ -63,7 +54,11 @@ func addHomeDirPrefix(filepath string) string {
 	tildePrefix := "~" + string(os.PathSeparator)
 
 	if strings.HasPrefix(filepath, tildePrefix) {
-		return fpath.Join(homeDir(), strings.TrimPrefix(filepath, tildePrefix))
+		homedir, err := os.UserHomeDir()
+		if err != nil {
+			logrus.Fatalf("Unable to determine user home directory: %s", err)
+		}
+		return fpath.Join(homedir, strings.TrimPrefix(filepath, tildePrefix))
 	}
 
 	return fpath.Clean(filepath)
@@ -117,17 +112,6 @@ func PrepareLogFormat() logrus.Formatter {
 			FullTimestamp:          true,
 			TimestampFormat:        time.RFC3339Nano,
 			DisableLevelTruncation: true,
-		}
-	}
-}
-
-func chmodLocalActions(mappings ActionMappings, mode os.FileMode) {
-	for _, action := range mappings {
-		if action.SourceType == LocalSourceType {
-			err := os.Chmod(action.Filepath, mode)
-			if err != nil {
-				logrus.Warn(err)
-			}
 		}
 	}
 }

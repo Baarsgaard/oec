@@ -3,19 +3,20 @@ package queue
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/opsgenie/oec/conf"
-	"github.com/opsgenie/oec/git"
-	"github.com/opsgenie/oec/retryer"
-	"github.com/opsgenie/oec/worker_pool"
-	"github.com/pkg/errors"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/opsgenie/oec/conf"
+	"github.com/opsgenie/oec/git"
+	"github.com/opsgenie/oec/retryer"
+	"github.com/opsgenie/oec/worker_pool"
+	"github.com/pkg/errors"
+	"github.com/stretchr/testify/assert"
 )
 
 var mockConf = &conf.Configuration{
@@ -65,7 +66,7 @@ func mockHttpGet(retryer *retryer.Retryer, request *retryer.Request) (*http.Resp
 	response := &http.Response{
 		StatusCode: 200,
 		Header:     header,
-		Body:       ioutil.NopCloser(nil),
+		Body:       io.NopCloser(nil),
 	}
 
 	return response, nil
@@ -74,7 +75,7 @@ func mockHttpGet(retryer *retryer.Retryer, request *retryer.Request) (*http.Resp
 func mockHttpGetInvalidJson(retryer *retryer.Retryer, request *retryer.Request) (*http.Response, error) {
 
 	response := &http.Response{}
-	response.Body = ioutil.NopCloser(bytes.NewBufferString(`{"Invalid json": }`))
+	response.Body = io.NopCloser(bytes.NewBufferString(`{"Invalid json": }`))
 
 	return response, nil
 }
