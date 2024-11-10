@@ -103,23 +103,12 @@ func NewRepository(path string, options Options) *Repository {
 		Options: options,
 	}
 
-	err := repository.Chmod(0700)
-	if err != nil {
-		logrus.Warnf("Git repository[%s] chmod failed: %s", options.Url, err)
-	}
-
 	return repository
 }
 
 func (r *Repository) Pull() error {
 	r.rw.Lock()
 	defer r.rw.Unlock()
-	defer func() {
-		err := chmodRecursively(r.Path, 0700)
-		if err != nil {
-			logrus.Warnf("Git repository[%s] chmod failed: %s", r.Options.Url, err)
-		}
-	}()
 	return FetchAndReset(r.Path, r.Options.PrivateKeyFilepath, r.Options.Passphrase)
 }
 
@@ -129,23 +118,10 @@ func (r *Repository) Remove() error {
 	return os.RemoveAll(r.Path)
 }
 
-func (r *Repository) Chmod(mode os.FileMode) error {
-	return chmodRecursively(r.Path, mode)
-}
-
 func (r *Repository) RLock() {
 	r.rw.RLock()
 }
 
 func (r *Repository) RUnlock() {
 	r.rw.RUnlock()
-}
-
-func chmodRecursively(path string, mode os.FileMode) error {
-	return filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		return os.Chmod(path, mode)
-	})
 }
